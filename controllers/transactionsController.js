@@ -21,15 +21,15 @@ transactionRouter.get("/", (req, res, next) => {
 
 transactionRouter.get("/:id", (req, res, next) => {
   try {
-    const id = req.params;
-    const transactionObj = transactionArray.find(
-      (transaction) => transaction.id === parseInt(id)
+    const id = parseInt(req.params.id, 10); // Convert id to number
+    const transaction = transactionArray.find(
+      (item) => item.id === id
     );
-    // parseInt turns a  string into a valid integer
-    if (transactionObj) {
-      res.status(200).send(transactionObj);
+
+    if (transaction) {
+      res.status(200).send(transaction);
     } else {
-      res.status(404).send({ message: "cound not find transaction" });
+      res.status(404).send({ message: "Could not find transaction" });
     }
   } catch (error) {
     next(error);
@@ -60,7 +60,7 @@ transactionRouter.put("/:id", (req, res, next) => {
     if (transationIndex === -1) {
       res.status(404).send({ message: "Transaction to update not found" });
     }
-// data transaction id match 
+    // data transaction id match
     const currentTransaction = transactionArray[transationIndex];
     // loop through requested transactions Array
     for (let key in transactionToUpdate) {
@@ -71,9 +71,27 @@ transactionRouter.put("/:id", (req, res, next) => {
     }
     // update transactionArray to now have new transaction
     transactionArray[transationIndex] = currentTransaction;
-    res.status(201).send(currentTransaction)
+    res.status(201).send(currentTransaction);
   } catch (err) {
     next(err);
+  }
+});
+
+// DELETE an item by ID
+transactionRouter.delete("/:id", (req, res, next) => {
+  try {
+    const id = parseInt(req.params.id);
+    const itemIndex = transactionArray.findIndex((item) => item.id === id);
+
+    if (itemIndex === -1) {
+      return res.status(404).send({ message: "Item not found" });
+    }
+
+    const deletedItem = transactionArray.splice(itemIndex, 1);
+
+    res.send(deletedItem[0]);
+  } catch (error) {
+    next(error);
   }
 });
 
