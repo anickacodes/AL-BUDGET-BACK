@@ -22,9 +22,7 @@ transactionRouter.get("/", (req, res, next) => {
 transactionRouter.get("/:id", (req, res, next) => {
   try {
     const id = parseInt(req.params.id, 10); // Convert id to number
-    const transaction = transactionArray.find(
-      (item) => item.id === id
-    );
+    const transaction = transactionArray.find((item) => item.id === id);
 
     if (transaction) {
       res.status(200).send(transaction);
@@ -41,7 +39,7 @@ transactionRouter.post("/", (req, res, next) => {
     const transactionBody = req.body;
     if (transactionBody) {
       transactionArray.push(transactionBody);
-      res.status(201).send(transactionArray);
+      res.status(201).send(transactionBody);
     } else {
       res.status(404).send({ message: "Transaction was not created" });
     }
@@ -54,26 +52,30 @@ transactionRouter.put("/:id", (req, res, next) => {
   try {
     const transactionId = parseInt(req.params.id);
     const transactionToUpdate = req.body;
-    const transationIndex = transactionArray.findIndex(
-      (el) => el.id === transactionId
+    const transactionIndex = transactionArray.findIndex(
+      (element) => element.id === transactionId
     );
-    if (transationIndex === -1) {
-      res.status(404).send({ message: "Transaction to update not found" });
+
+    if (transactionIndex === -1) {
+      res.status(404).send({ message: "Transaction not found" });
     }
-    // data transaction id match
-    const currentTransaction = transactionArray[transationIndex];
-    // loop through requested transactions Array
+
+    /// takes the transaction from the db (transactionArray) that matches the index
+    const currentTransaction = transactionArray[transactionIndex];
+
+    /// loop through the transaction that was requested
     for (let key in transactionToUpdate) {
       if (currentTransaction.hasOwnProperty([key])) {
-        currentTransaction[key] = transactionToUpdate[key];
-        // set this to then equal req.body key
+        currentTransaction[key] = transactionToUpdate[key]; ///from the request
       }
     }
-    // update transactionArray to now have new transaction
-    transactionArray[transationIndex] = currentTransaction;
-    res.status(201).send(currentTransaction);
-  } catch (err) {
-    next(err);
+
+    /// updates the transaction in the array of transactions (data.js)
+    transactionArray[transactionIndex] = currentTransaction;
+
+    res.send(currentTransaction);
+  } catch (error) {
+    next(error);
   }
 });
 
