@@ -69,10 +69,9 @@ transactionRouter.put("/:id", (req, res, next) => {
         currentTransaction[key] = transactionToUpdate[key]; ///from the request
       }
     }
-
     /// updates the transaction in the array of transactions (data.js)
     transactionArray[transactionIndex] = currentTransaction;
-
+    
     res.send(currentTransaction);
   } catch (error) {
     next(error);
